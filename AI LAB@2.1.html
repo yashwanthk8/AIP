@@ -1,0 +1,351 @@
+1.Family Tree
+class FamilyTree:
+    def __init__(self):
+        self.family_tree = {}
+
+    def add_member(self, name, parent=None):
+        if name not in self.family_tree:
+            self.family_tree[name] = {'parent': parent, 'children': []}
+            if parent in self.family_tree:
+                self.family_tree[parent]['children'].append(name)
+
+    def print_family_tree(self):
+        print("Family Tree:")
+        for name, data in self.family_tree.items():
+            parent = data['parent']
+            children = data['children']
+            print(f"{name} (Parent: {parent}, Children: {', '.join(children)})")
+
+family = FamilyTree()
+
+while True:
+    print("\nFamily Tree Management Menu:")
+    print("1. Add Member")
+    print("2. Print Family Tree")
+    print("3. Exit")
+    choice = input("Enter your choice: ")
+    if choice == '1':
+        name = input("Enter the name of the family member: ")
+        parent = input("Enter the parent's name (leave blank if none): ")
+        family.add_member(name, parent)
+    elif choice == '2':
+        family.print_family_tree()
+    elif choice == '3':
+        break
+    else:
+        print("Invalid choice. Please enter a valid option.")
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2.Water Jug Problem
+
+from collections import defaultdict
+a = int(input("Enter Jug 1 Capacity: "))
+b = int(input("Enter Jug 2 Capacity: "))
+c = int(input("Enter Aim: "))
+jug1, jug2, aim = a, b, c
+visited = defaultdict(lambda: False)
+def waterJugSolver(amt1, amt2):
+    if (amt1 == aim and amt2 == 0) or (amt2 == aim and amt1 == 0):
+        print(amt1, amt2)
+        return True
+    if visited[(amt1, amt2)] == False:
+        print(amt1, amt2)
+        visited[(amt1, amt2)] = True
+        return (waterJugSolver(0, amt2) or
+                waterJugSolver(amt1, 0) or
+                waterJugSolver(jug1, amt2) or
+                waterJugSolver(amt1, jug2) or
+                waterJugSolver(amt1 + min(amt2, (jug1-amt1)),
+                               amt2 - min(amt2, (jug1-amt1))) or
+                waterJugSolver(amt1 - min(amt1, (jug2-amt2)),
+                               amt2 + min(amt1, (jug2-amt2))))
+    else:
+        return False
+print("Steps: ")
+waterJugSolver(0, 0)
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3.BFS
+
+from queue import PriorityQueue
+v = int(input("Enter Number of vertices: "))  # Ask for the number of vertices
+graph = [[] for i in range(v)]
+
+def addedge(x, y, cost):
+    graph[x].append((y, cost))
+    graph[y].append((x, cost))
+
+def bestFirstSearch(source, target, n):
+    visited = [False] * n
+    pq = PriorityQueue()
+    pq.put((0, source))
+    visited[source] = True
+    while not pq.empty():
+        u = pq.get()[1]
+        print(u, end="")
+        if u == target:
+            print(" ")
+            break
+        for v, c in graph[u]:
+            if not visited[v]:
+                visited[v] = True
+                pq.put((c, v))
+        print()
+   # Input edges
+for i in range(v - 1):  # You need v - 1 edges to create a connected graph
+    v1, v2, cost = map(int, input().split())
+    addedge(v1, v2, cost)
+
+print("Order of vertices included..")
+source = int(input("Enter source: "))
+target = int(input("Enter target: "))
+bestFirstSearch(source, target, v)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4. DFS
+
+graph = {}
+visited = set()
+
+def addedge(x,y):
+    if x not in graph.keys():
+        graph[x] = [y]
+    else:
+        graph[x].append(y)
+    if y not in graph.keys():
+        graph[y] = [x]
+    else:
+        graph[y].append(x)
+
+def DFS(visited, graph, start):
+    if start not in visited:
+        print(start, end=" ")
+        visited.add(start)
+        for i in graph[start]:
+            DFS(visited, graph, i)
+'''
+addedge(5, 1)
+addedge(5, 3)
+addedge(1, 6)
+addedge(3, 2)
+addedge(3, 4)
+addedge(8, 0)
+addedge(1, 8)
+addedge(4, 8)
+'''
+chk = "YES"
+while chk == "YES":
+    v1, v2 =map(int, input().split())
+    addedge(v1, v2)
+    chk = input("Want to add edge(YES/NO): ")
+start = int(input("Enter start: "))
+
+DFS(visited, graph, start)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+5.DLS
+
+graph = {}
+visited = set()
+
+def addedge(x, y):
+    if x not in graph.keys():
+        graph[x] = [y]
+    else:
+        graph[x].append(y)
+    if y not in graph.keys():
+        graph[y] = [x]
+    else:
+        graph[y].append(x)
+
+def DLS(visited, graph, node, limit):
+    if limit > 0:
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+            for i in graph[node]:
+                DLS(visited, graph, i, limit - 1)
+
+'''
+addedge(5, 1)
+addedge(5, 3)
+addedge(1, 6)
+addedge(3, 2)
+addedge(3, 4)
+addedge(8, 0)
+addedge(1, 8)
+addedge(4, 8)
+'''
+
+chk = "YES"
+while chk == "YES":
+    v1, v2 = map(int, input().split())
+    addedge(v1, v2)
+    chk = input("Want to add edge (YES/NO): ")
+
+start = int(input("Enter start: "))
+limit = int(input("Enter depth limit: "))
+
+DLS(visited, graph, start, limit)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+6. A *
+
+from queue import PriorityQueue
+v = 5
+graph = [[] for _ in range(v)]
+def addedge(x, y, cost):
+    graph[x].append((y, cost))
+    graph[y].append((x, cost))
+def heuristic(node, target):
+    return abs(node - target)
+def aStarSearch(source, target, n):
+    visited = [False] * n
+    pq = PriorityQueue()
+    pq.put((0, source, heuristic(source, target), [source]))  
+    visited[source] = True
+    while not pq.empty():
+        _, u, _, path = pq.get()
+        if u == target:
+            return path  
+        visited[u] = True
+        for v, c in graph[u]:
+            if not visited[v]:
+                new_cost = c
+                new_path = path + [v]  
+                pq.put((new_cost, v, new_cost + heuristic(v, target), new_path))
+    return []  
+addedge(0, 1, 4)
+addedge(0, 2, 5)
+addedge(1, 3, 2)
+addedge(2, 4, 8)
+addedge(3, 4, 6)
+source = 0
+target = 4
+path = aStarSearch(source, target, v)
+if path:
+    print("A* Path:", path)
+else:
+    print("No path found.")
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+7.NQUEENS
+
+def nQueens(k,n):
+    for i in range(1,n+1):
+        if(place(k,i)):
+            x[k]=i
+            if(k==n):
+                print("The Positions are : ")
+                for j in range(1,n+1):
+                    for l in range(1,n+1):
+                        if x[j]==l:
+                            print("Q",end=" ")
+                        else:
+                            print("-",end=" ")
+                    print()
+            else:
+                nQueens(k+1,n)
+def place(k,i):
+    for j in range(1,k):
+        if x[j]==i or abs(x[j]-i)==abs(j-k):
+            return False
+    return True
+n=int(input("Enter the no of Queens: "))
+x=list()
+if n==2 or n==3:
+    print("Not Possible")
+else:
+    x=[0]*(n+1)
+    nQueens(1,n)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8 csp graph color
+
+def is_safe(vertex, color, graph, c):
+    for i in range(len(graph)):
+        if graph[vertex][i] and color[i] == c:
+            return False
+    return True
+
+def graph_coloring_util(graph, colors, color, v):
+    if v == len(graph):
+        return True
+
+    for c in colors:
+        if is_safe(v, color, graph, c):
+            color[v] = c
+            if graph_coloring_util(graph, colors, color, v + 1):
+                return True
+            color[v] = None
+
+    return False
+
+def graph_coloring(graph, colors):
+    color = [None] * len(graph)
+
+    if not graph_coloring_util(graph, colors, color, 0):
+        print("Solution does not exist.")
+        return
+
+    print("Solution:")
+    for v in range(len(graph)):
+        print(f"Vertex {v + 1} is assigned color {color[v]}")
+n = int(input("Enter number of vertices: "))
+graph = []
+for i in range(n):
+    ver_cost_list = list(map(int, input().split()))
+    graph.append(ver_cost_list)
+
+# Static input for the colors
+#colors = ["Red", "Green", "Blue"]
+colors = list(input("Enter Colors: ").split())
+
+# Solve the graph coloring problem
+graph_coloring(graph, colors)
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9.logical
+
+from kanren import run, var, fact
+from kanren.assoccomm import eq_assoccomm as eq
+from kanren.assoccomm import commutative, associative
+
+addition = 'add'
+multiplication = 'mul'
+
+fact(commutative, multiplication)
+fact(commutative, addition)
+fact(associative, multiplication)
+fact(associative, addition)
+
+x, y, z = var('a'), var('b'), var('c')
+originalPattern = (multiplication, (addition, z, x), y)
+ex1 = (multiplication, 9, (addition, 5, 1))
+ex2 = (addition, 5, (multiplication, 8, 1))
+ex3 = (multiplication, 59, (addition, 234, 34))
+
+print(run(0, (x, y, z), eq(originalPattern, ex1)))
+print(run(0, (x, y, z), eq(originalPattern, ex2)))
+print(run(0, (x, y, z), eq(originalPattern, ex3)))
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+10.knowledge
+
+10.Aim: Knowledge Representation of statements.
+a.Ram,Likes mango.
+b.Semma is a girl.
+c.Bill likes cindy.
+d.Rose is red.
+e.John Owns gold.
+
+Code:
+likes(ram,mango).
+girl(seema).
+red(rose).
+owns(john,gold).
+likes(bill,cindy).
+
+Prolog online compiler link to execute:
+https://swish.swi-prolog.org/
+?- likes(ram,What).
+What=mango
+?- likes(Who,cindy).
+Who = bill
+?- red(What).
+What = rose
+?-owns(Who,What).
+What = gold,
+Who = john
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
